@@ -25,6 +25,16 @@ export default function App() {
   const [activeCategory, setActiveCategory] = React.useState('Todos');
   const [searchQuery, setSearchQuery] = React.useState('');
 
+  // Sitema de Agendamento Premium States
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [bookingStep, setBookingStep] = React.useState(1);
+  const [selectedService, setSelectedService] = React.useState<any>(null);
+  const [selectedDate, setSelectedDate] = React.useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = React.useState<string | null>(null);
+  const [clientName, setClientName] = React.useState('');
+  const [clientPhone, setClientPhone] = React.useState('');
+  const [calendarDate, setCalendarDate] = React.useState(new Date(2026, 4, 1)); // Iniciado em Maio de 2026
+
   const categories = [
     'Todos', 'Cabelo', 'Depilação', 'Barba', 'Estética', 'Mãos e Pés', 'Maquiagem', 'Massagem', 'Sobrancelha'
   ];
@@ -48,11 +58,90 @@ export default function App() {
     { name: 'Spa Day Relax', items: ['Massagem', 'Limpeza de Pele', 'Manicure'], price: 'R$ 450,00' },
   ];
 
+  const bookingOptions = [
+    ...allServices.map(s => ({ name: s.name, price: s.price, category: s.category, time: s.time })),
+    ...packages.map(p => ({ name: p.name, price: p.price, category: 'Pacote', time: 'Completo' }))
+  ];
+
   const filteredServices = allServices.filter(s => {
     const matchesCategory = activeCategory === 'Todos' || s.category.includes(activeCategory);
     const matchesSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  const handleOpenBooking = (serviceOrPkg?: any) => {
+    if (serviceOrPkg) {
+      setSelectedService(serviceOrPkg);
+      setSelectedDate(null);
+      setSelectedTime(null);
+      setBookingStep(2); // Vai direto para o calendário se já escolheu o serviço
+    } else {
+      setSelectedService(bookingOptions[0]);
+      setSelectedDate(null);
+      setSelectedTime(null);
+      setBookingStep(1); // Passo 1 se for agendamento geral
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleNextMonth = () => {
+    setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1, 1));
+  };
+
+  const handlePrevMonth = () => {
+    setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() - 1, 1));
+  };
+
+  const isPastDate = (date: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return date < today;
+  };
+
+  const monthNames = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+  ];
+
+  const getCalendarDays = () => {
+    const year = calendarDate.getFullYear();
+    const month = calendarDate.getMonth();
+
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDayIndex = new Date(year, month, 1).getDay();
+
+    // Align with Monday as start of week: Monday=0, Tuesday=1 ... Sunday=6
+    const adjustedFirstDayIndex = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+
+    const daysArray = [];
+    for (let i = 0; i < adjustedFirstDayIndex; i++) {
+      daysArray.push(null);
+    }
+    for (let i = 1; i <= daysInMonth; i++) {
+      daysArray.push(new Date(year, month, i));
+    }
+    return daysArray;
+  };
+
+  const daysArray = getCalendarDays();
+
+  const morningSlots = ['08:00', '09:00', '10:00', '11:00'];
+  const afternoonSlots = ['13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+
+  const handleConfirmAgendamento = () => {
+    if (!selectedService || !selectedDate || !selectedTime || !clientName) return;
+
+    const formattedDate = selectedDate.toLocaleDateString('pt-BR', { 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric' 
+    });
+
+    const message = `Olá, Essencia Studio! Gostaria de confirmar meu agendamento:%0A%0A✨ *Serviço:* ${selectedService.name}%0A💰 *Valor:* ${selectedService.price}%0A📅 *Data:* ${formattedDate}%0A🕒 *Horário:* ${selectedTime}%0A👤 *Cliente:* ${clientName}`;
+
+    window.open(`https://wa.me/5511987654321?text=${message}`, '_blank');
+    setIsModalOpen(false);
+  };
 
   useEffect(() => {
     // Hero Entrance
@@ -120,23 +209,22 @@ export default function App() {
       <nav className="fixed top-0 left-0 w-full z-50 glass border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center">
-            <span className="text-2xl font-display tracking-[0.15em] text-gold font-bold uppercase">
+            <span className="text-xl md:text-2xl font-display tracking-[0.15em] text-gold font-bold uppercase">
               Essencia Studio
             </span>
           </div>
           
           <div className="hidden md:flex items-center gap-10 text-sm font-medium uppercase tracking-widest">
             <a href="#home" className="hover:text-gold transition-colors">Início</a>
-            <a href="#servicos" className="hover:text-gold transition-colors">Serviços</a>
+            <a href="#menu" className="hover:text-gold transition-colors">Serviços</a>
             <a href="#sobre" className="hover:text-gold transition-colors">Sobre</a>
             <a href="#contato" className="hover:text-gold transition-colors">Contato</a>
-            <a 
-              href="https://wa.me/5511987654321" 
-              target="_blank" 
-              className="px-6 py-2 bg-gold text-dark font-bold rounded-full hover:bg-white transition-all duration-300"
+            <button 
+              onClick={() => handleOpenBooking()}
+              className="px-6 py-2 bg-gold text-dark font-bold rounded-full hover:bg-white cursor-pointer transition-all duration-300"
             >
               Agendar
-            </a>
+            </button>
           </div>
 
           <button className="md:hidden text-gold" onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -152,10 +240,15 @@ export default function App() {
             className="md:hidden glass absolute top-20 left-0 w-full p-6 flex flex-col gap-6 text-center"
           >
             <a href="#home" onClick={() => setIsMenuOpen(false)}>Início</a>
-            <a href="#servicos" onClick={() => setIsMenuOpen(false)}>Serviços</a>
+            <a href="#menu" onClick={() => setIsMenuOpen(false)}>Serviços</a>
             <a href="#sobre" onClick={() => setIsMenuOpen(false)}>Sobre</a>
             <a href="#contato" onClick={() => setIsMenuOpen(false)}>Contato</a>
-            <a href="https://wa.me/5511987654321" className="bg-gold text-dark py-3 rounded-full font-bold">Agendar Agora</a>
+            <button 
+              onClick={() => { setIsMenuOpen(false); handleOpenBooking(); }} 
+              className="bg-gold text-dark py-3 rounded-full font-bold cursor-pointer"
+            >
+              Agendar Agora
+            </button>
           </motion.div>
         )}
       </nav>
@@ -182,15 +275,15 @@ export default function App() {
             Especialistas em transformar olhares e elevar a autoestima através de técnicas exclusivas de visagismo e estética avançada.
           </p>
           <div className="hero-cta flex flex-col md:flex-row items-center justify-center gap-6">
-            <a 
-              href="https://wa.me/5511987654321" 
-              className="group relative px-10 py-5 bg-gold text-dark font-bold rounded-full overflow-hidden transition-all animate-pulse-gold"
+            <button 
+              onClick={() => handleOpenBooking()}
+              className="group relative px-10 py-5 bg-gold text-dark font-bold rounded-full overflow-hidden cursor-pointer transition-all animate-pulse-gold inline-flex items-center justify-center gap-2 animate-none"
             >
               <span className="relative z-10 flex items-center gap-2">
                 Agende sua Experiência <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </span>
-            </a>
-            <a href="#servicos" className="text-sm uppercase tracking-[0.2em] hover:text-gold transition-colors border-b border-white/20 pb-1">
+            </button>
+            <a href="#menu" className="text-sm uppercase tracking-[0.2em] hover:text-gold transition-colors border-b border-white/20 pb-1">
               Descubra nossos serviços
             </a>
           </div>
@@ -298,13 +391,12 @@ export default function App() {
                 <h3 className="text-xl mb-2 group-hover:text-gold transition-colors">{service.name}</h3>
                 <div className="flex justify-between items-center mt-6">
                   <span className="text-lg font-display text-white/80">{service.price}</span>
-                  <a 
-                    href={`https://wa.me/5511987654321?text=Olá! Gostaria de agendar: ${service.name}`}
-                    target="_blank"
-                    className="text-xs uppercase tracking-widest font-bold text-gold hover:text-white transition-colors flex items-center gap-2"
+                  <button 
+                    onClick={() => handleOpenBooking(service)}
+                    className="text-xs uppercase tracking-widest font-bold text-gold hover:text-white cursor-pointer transition-colors flex items-center gap-2"
                   >
                     Agendar <ChevronRight className="w-4 h-4" />
-                  </a>
+                  </button>
                 </div>
               </motion.div>
             ))}
@@ -332,13 +424,12 @@ export default function App() {
                 </ul>
                 <div className="flex justify-between items-center">
                   <span className="text-xl font-display text-gold">{pkg.price}</span>
-                  <a 
-                    href={`https://wa.me/5511987654321?text=Olá! Tenho interesse no pacote: ${pkg.name}`}
-                    target="_blank"
-                    className="px-6 py-2 bg-white/5 hover:bg-gold hover:text-dark rounded-full text-xs font-bold transition-all"
+                  <button 
+                    onClick={() => handleOpenBooking({ name: pkg.name, price: pkg.price, category: 'Pacote' })}
+                    className="px-6 py-2 bg-white/5 hover:bg-gold hover:text-dark rounded-full text-xs font-bold transition-all cursor-pointer"
                   >
-                    Saber Mais
-                  </a>
+                    Agendar Pacote
+                  </button>
                 </div>
               </div>
             ))}
@@ -453,12 +544,12 @@ export default function App() {
             Reserve seu horário e descubra por que somos referência em beleza e estética exclusiva.
           </p>
           <div className="flex flex-col md:flex-row items-center justify-center gap-8">
-            <a 
-              href="https://wa.me/5511987654321" 
-              className="w-full md:w-auto px-12 py-6 bg-gold text-dark font-bold rounded-full text-lg hover:bg-white transition-all shadow-2xl shadow-gold/20 flex items-center justify-center gap-3"
+            <button 
+              onClick={() => handleOpenBooking()}
+              className="w-full md:w-auto px-12 py-6 bg-gold text-dark font-bold rounded-full text-lg hover:bg-white transition-all cursor-pointer shadow-2xl shadow-gold/20 flex items-center justify-center gap-3"
             >
-              <Phone className="w-6 h-6" /> Agendar via WhatsApp
-            </a>
+              <Phone className="w-6 h-6" /> Agendar Agora
+            </button>
             <div className="text-left">
               <p className="text-sm text-white/40 uppercase tracking-widest mb-1">Ou ligue para nós</p>
               <p className="text-xl font-display">(11) 98765-4321</p>
@@ -525,13 +616,335 @@ export default function App() {
       </footer>
 
       {/* Floating WhatsApp Button */}
-      <a 
-        href="https://wa.me/5511987654321" 
-        target="_blank"
-        className="fixed bottom-8 right-8 z-50 w-16 h-16 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform duration-300"
+      <button 
+        onClick={() => handleOpenBooking()}
+        className="fixed bottom-8 right-8 z-50 w-16 h-16 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform duration-300 cursor-pointer border-none outline-none"
       >
         <MessageCircle className="w-8 h-8" />
-      </a>
+      </button>
+
+      {/* Premium Booking Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="glass max-w-md w-full rounded-[2rem] p-8 md:p-10 border border-white/10 relative bg-dark/95 shadow-2x shadow-gold/10"
+          >
+            {/* Close Button */}
+            <button 
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-6 right-6 text-white/40 hover:text-gold cursor-pointer transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            {/* Stepper Progress Indicator */}
+            <div className="flex items-center gap-1.5 mb-8">
+              {[1, 2, 3, 4].map((step) => (
+                <div 
+                  key={step} 
+                  className={`h-1 flex-1 rounded-full transition-all duration-500 ${
+                    step <= bookingStep ? 'bg-gold' : 'bg-white/10'
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* Step 1: Service Selection */}
+            {bookingStep === 1 && (
+              <motion.div 
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="space-y-6"
+              >
+                <div>
+                  <span className="text-[10px] uppercase tracking-[0.25em] text-gold font-bold block mb-1">Passo 1 de 4</span>
+                  <h3 className="text-2xl font-display text-white">Escolha a Experiência</h3>
+                  <p className="text-xs text-white/40 mt-1">Selecione o serviço ou pacote desejado para o seu momento de cuidado.</p>
+                </div>
+
+                <div className="max-h-[280px] overflow-y-auto pr-1 space-y-2.5 scrollbar-thin scrollbar-thumb-gold/20">
+                  {bookingOptions.map((option, idx) => (
+                    <div 
+                      key={idx}
+                      onClick={() => setSelectedService(option)}
+                      className={`p-4 rounded-2xl border transition-all cursor-pointer flex justify-between items-center ${
+                        selectedService?.name === option.name 
+                          ? 'border-gold bg-gold/5 shadow-inner shadow-gold/5' 
+                          : 'border-white/5 hover:border-white/15 bg-white/[0.01]'
+                      }`}
+                    >
+                      <div>
+                        <p className={`text-sm font-medium transition-colors ${selectedService?.name === option.name ? 'text-gold' : 'text-white'}`}>{option.name}</p>
+                        <span className="text-[10px] uppercase tracking-wider text-white/30">{option.category}</span>
+                      </div>
+                      <span className="text-xs font-display text-white/80 font-semibold bg-white/[0.02] border border-white/5 px-2.5 py-1 rounded-full">{option.price}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    onClick={() => setBookingStep(2)}
+                    disabled={!selectedService}
+                    className="px-8 py-3 bg-gold text-dark font-bold text-xs uppercase tracking-widest rounded-full hover:bg-white cursor-pointer transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    Próximo
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 2: Date Selection (Calendar Component) */}
+            {bookingStep === 2 && (
+              <motion.div 
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="space-y-6"
+              >
+                <div>
+                  <span className="text-[10px] uppercase tracking-[0.25em] text-gold font-bold block mb-1">Passo 2 de 4</span>
+                  <h3 className="text-2xl font-display text-white">Agende o Dia</h3>
+                  <p className="text-xs text-white/40 mt-1">Nossos rituais de estética e beleza estão disponíveis de Segunda a Sábado.</p>
+                </div>
+
+                {/* Month Navigator */}
+                <div className="flex justify-between items-center bg-white/[0.01] px-2 py-1 rounded-xl border border-white/5">
+                  <button 
+                    onClick={handlePrevMonth}
+                    type="button"
+                    className="p-2 hover:text-gold transition-colors text-white cursor-pointer"
+                  >
+                    &larr;
+                  </button>
+                  <span className="font-display text-xs tracking-widest text-white uppercase font-bold">
+                    {monthNames[calendarDate.getMonth()]} {calendarDate.getFullYear()}
+                  </span>
+                  <button 
+                    onClick={handleNextMonth}
+                    type="button"
+                    className="p-2 hover:text-gold transition-colors text-white cursor-pointer"
+                  >
+                    &rarr;
+                  </button>
+                </div>
+
+                {/* Weekdays Grid */}
+                <div className="grid grid-cols-7 gap-1 text-center text-[9px] text-white/30 uppercase tracking-widest font-bold">
+                  <span>Seg</span>
+                  <span>Ter</span>
+                  <span>Qua</span>
+                  <span>Qui</span>
+                  <span>Sex</span>
+                  <span>Sáb</span>
+                  <span className="text-red-500/40">Dom</span>
+                </div>
+
+                {/* Days Matrix */}
+                <div className="grid grid-cols-7 gap-1">
+                  {daysArray.map((day, idx) => {
+                    if (!day) return <div key={`empty-${idx}`} className="aspect-square" />;
+
+                    const isSundayVal = day.getDay() === 0;
+                    const isPastVal = isPastDate(day);
+                    const isDisabled = isSundayVal || isPastVal;
+                    
+                    const isSelected = selectedDate && 
+                      selectedDate.getDate() === day.getDate() && 
+                      selectedDate.getMonth() === day.getMonth() && 
+                      selectedDate.getFullYear() === day.getFullYear();
+
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        disabled={isDisabled}
+                        onClick={() => setSelectedDate(day)}
+                        className={`aspect-square rounded-xl flex items-center justify-center text-xs transition-all relative cursor-pointer border ${
+                          isSelected 
+                            ? 'bg-gold text-dark border-gold font-black scale-105 shadow-lg shadow-gold/20' 
+                            : isDisabled
+                              ? 'text-white/10 cursor-not-allowed border-transparent bg-transparent outline-none line-through'
+                              : 'text-white/60 hover:bg-white/5 hover:text-gold bg-white/[0.01] border-white/5'
+                        }`}
+                      >
+                        {day.getDate()}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="flex justify-between pt-2">
+                  <button
+                    onClick={() => setBookingStep(1)}
+                    className="px-6 py-3 border border-white/10 rounded-full text-xs uppercase tracking-widest text-white/60 hover:text-white cursor-pointer transition-colors"
+                  >
+                    Voltar
+                  </button>
+                  <button
+                    onClick={() => setBookingStep(3)}
+                    disabled={!selectedDate}
+                    className="px-8 py-3 bg-gold text-dark font-bold text-xs uppercase tracking-widest rounded-full hover:bg-white cursor-pointer transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    Próximo
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 3: Time Slot Selection */}
+            {bookingStep === 3 && (
+              <motion.div 
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="space-y-6"
+              >
+                <div>
+                  <span className="text-[10px] uppercase tracking-[0.25em] text-gold font-bold block mb-1">Passo 3 de 4</span>
+                  <h3 className="text-2xl font-display text-white">Escolha o Horário</h3>
+                  <p className="text-xs text-white/40 mt-1">
+                    Selecionado: {selectedDate?.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' })}
+                  </p>
+                </div>
+
+                {/* Morning Slots */}
+                <div className="space-y-2">
+                  <span className="text-[10px] uppercase tracking-wider text-white/30 font-medium">Turno da Manhã</span>
+                  <div className="grid grid-cols-4 gap-2">
+                    {morningSlots.map(time => (
+                      <button
+                        key={time}
+                        type="button"
+                        onClick={() => setSelectedTime(time)}
+                        className={`py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
+                          selectedTime === time
+                            ? 'bg-gold text-dark border-gold font-bold scale-105'
+                            : 'bg-white/[0.01] border-white/5 text-white/70 hover:border-white/15'
+                        }`}
+                      >
+                        {time}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Afternoon Slots */}
+                <div className="space-y-2 pt-2">
+                  <span className="text-[10px] uppercase tracking-wider text-white/30 font-medium">Turno da Tarde</span>
+                  <div className="grid grid-cols-3 gap-2">
+                    {afternoonSlots.map(time => {
+                      const isPeak = time === '15:00';
+                      const isSelected = selectedTime === time;
+                      return (
+                        <button
+                          key={time}
+                          type="button"
+                          onClick={() => setSelectedTime(time)}
+                          className={`py-2.5 px-1 rounded-xl text-xs font-semibold transition-all cursor-pointer border relative flex flex-col items-center justify-center ${
+                            isSelected
+                              ? 'bg-gold text-dark border-gold font-bold scale-105'
+                              : 'bg-white/[0.01] border-white/5 text-white/70 hover:border-white/15'
+                          }`}
+                        >
+                          <span>{time}</span>
+                          {isPeak && !isSelected && (
+                            <span className="text-[8px] text-gold/60 font-medium -mt-0.5 scale-90">Pico</span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="flex justify-between pt-2">
+                  <button
+                    onClick={() => setBookingStep(2)}
+                    className="px-6 py-3 border border-white/10 rounded-full text-xs uppercase tracking-widest text-white/60 hover:text-white cursor-pointer transition-colors"
+                  >
+                    Voltar
+                  </button>
+                  <button
+                    onClick={() => setBookingStep(4)}
+                    disabled={!selectedTime}
+                    className="px-8 py-3 bg-gold text-dark font-bold text-xs uppercase tracking-widest rounded-full hover:bg-white cursor-pointer transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    Próximo
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 4: Personal Details & Confirmation */}
+            {bookingStep === 4 && (
+              <motion.div 
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="space-y-6"
+              >
+                <div>
+                  <span className="text-[10px] uppercase tracking-[0.25em] text-gold font-bold block mb-1">Passo 4 de 4</span>
+                  <h3 className="text-2xl font-display text-white">Confirmação</h3>
+                  <p className="text-xs text-white/40 mt-1">Insira seus dados pessoais para validar seu momento de luxo e bem-estar.</p>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-[10px] uppercase tracking-wider text-white/40 block mb-1.5">Seu Nome Completo</label>
+                    <input 
+                      type="text" 
+                      placeholder="Amanda Silveira"
+                      value={clientName}
+                      onChange={(e) => setClientName(e.target.value)}
+                      className="w-full bg-white/[0.01] border border-white/10 rounded-xl px-4 py-3 outline-none text-sm text-white focus:border-gold/50 transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] uppercase tracking-wider text-white/40 block mb-1.5">Telefone de Contato</label>
+                    <input 
+                      type="tel" 
+                      placeholder="(11) 99999-9999"
+                      value={clientPhone}
+                      onChange={(e) => setClientPhone(e.target.value)}
+                      className="w-full bg-white/[0.01] border border-white/10 rounded-xl px-4 py-3 outline-none text-sm text-white focus:border-gold/50 transition-colors"
+                    />
+                  </div>
+                </div>
+
+                {/* Elegant reservation brief */}
+                <div className="bg-white/[0.01] border border-white/5 p-4 rounded-2xl space-y-2">
+                  <span className="text-[9px] uppercase tracking-widest text-gold font-bold block">Resumo do Tratamento</span>
+                  <div className="flex justify-between items-start">
+                    <p className="text-xs font-semibold text-white/90">{selectedService?.name}</p>
+                    <p className="text-xs font-display text-gold font-bold whitespace-nowrap ml-2">{selectedService?.price}</p>
+                  </div>
+                  <div className="text-[10px] text-white/30 flex gap-2">
+                    <span>📅 {selectedDate?.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                    <span>🕒 {selectedTime}</span>
+                  </div>
+                </div>
+
+                <div className="flex justify-between pt-2">
+                  <button
+                    onClick={() => setBookingStep(3)}
+                    className="px-6 py-3 border border-white/10 rounded-full text-xs uppercase tracking-widest text-white/60 hover:text-white cursor-pointer transition-colors"
+                  >
+                    Voltar
+                  </button>
+                  <button
+                    onClick={handleConfirmAgendamento}
+                    disabled={!clientName.trim() || !clientPhone.trim()}
+                    className="px-8 py-3 bg-gold text-dark font-black text-xs uppercase tracking-widest rounded-full hover:bg-white cursor-pointer transition-all disabled:opacity-35 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-gold/10"
+                  >
+                    Confirmar
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
