@@ -3,14 +3,16 @@
 @theme {
   --font-display: "Playfair Display", serif;
   --font-sans: "Plus Jakarta Sans", sans-serif;
-  --color-gold: #D4AF37;
-  --color-dark: #050505;
-  --color-card: rgba(255, 255, 255, 0.03);
+  --color-gold: #C59F70;
+  --color-dark: #121212;
+  --color-concrete: #DFDDD8;
+  --color-cream: #F5F4F0;
+  --color-card: rgba(255, 255, 255, 0.02);
 }
 
 @layer base {
   body {
-    @apply bg-dark text-white/90 font-sans selection:bg-gold/30;
+    @apply bg-dark text-[#ECEAE5] font-sans selection:bg-gold/30;
   }
   
   h1, h2, h3, h4 {

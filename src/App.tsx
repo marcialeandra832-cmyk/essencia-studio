@@ -300,10 +300,10 @@ export default function App() {
       </section>
 
       {/* Authority Marquee */}
-      <div className="py-12 border-y border-white/5 bg-white/[0.02] overflow-hidden">
+      <div className="py-12 border-y border-[#121212]/10 bg-[#DFDDD8] overflow-hidden">
         <div className="marquee-content flex items-center gap-20 px-10">
           {[...partners, ...partners].map((partner, i) => (
-            <span key={i} className="text-xl md:text-2xl font-display text-white/20 whitespace-nowrap uppercase tracking-[0.3em]">
+            <span key={i} className="text-xl md:text-2xl font-display text-[#121212]/30 whitespace-nowrap uppercase tracking-[0.3em] font-medium">
               {partner}
             </span>
           ))}
@@ -438,10 +438,10 @@ export default function App() {
       </section>
 
       {/* About Section */}
-      <section id="sobre" className="py-32 overflow-hidden">
+      <section id="sobre" className="py-32 bg-[#DFDDD8] text-[#121212] transition-colors overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
           <div className="relative">
-            <div className="aspect-[4/5] rounded-3xl overflow-hidden glass p-2">
+            <div className="aspect-[4/5] rounded-3xl overflow-hidden bg-white/40 p-2 border border-white/50 shadow-xl">
               <img 
                 src="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&q=80&w=800" 
                 alt="Salon Experience" 
@@ -449,12 +449,12 @@ export default function App() {
                 referrerPolicy="no-referrer"
               />
             </div>
-            <div className="absolute -bottom-10 -right-10 w-64 h-64 glass rounded-3xl p-8 hidden md:block">
-              <div className="text-4xl font-display text-gold mb-2">2.3k+</div>
-              <p className="text-sm text-white/40 uppercase tracking-widest">Seguidores no Instagram</p>
+            <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-white/80 backdrop-blur-md border border-white/50 rounded-3xl p-8 hidden md:block shadow-xl">
+              <div className="text-4xl font-display text-gold mb-2 font-bold">2.3k+</div>
+              <p className="text-sm text-[#121212]/60 uppercase tracking-widest font-semibold">Seguidores no Instagram</p>
               <div className="mt-6 flex -space-x-3">
                 {[1,2,3,4].map(i => (
-                  <div key={i} className="w-10 h-10 rounded-full border-2 border-dark overflow-hidden">
+                  <div key={i} className="w-10 h-10 rounded-full border-2 border-white overflow-hidden">
                     <img src={`https://picsum.photos/seed/${i+20}/100/100`} alt="User" referrerPolicy="no-referrer" />
                   </div>
                 ))}
@@ -463,31 +463,31 @@ export default function App() {
           </div>
 
           <div className="section-reveal">
-            <span className="text-gold uppercase tracking-[0.3em] text-sm mb-6 block">Nossa História</span>
-            <h2 className="text-4xl md:text-6xl mb-8 leading-tight">Onde a Tradição encontra a <span className="text-gold italic">Modernidade</span></h2>
-            <p className="text-white/60 text-lg mb-8 leading-relaxed">
+            <span className="text-gold uppercase tracking-[0.3em] text-sm mb-6 block font-bold">Nossa História</span>
+            <h2 className="text-4xl md:text-6xl mb-8 leading-tight font-display text-[#121212]">Onde a Tradição encontra a <span className="text-gold italic">Modernidade</span></h2>
+            <p className="text-[#121212]/80 text-lg mb-8 leading-relaxed">
               O Essencia Studio é mais que um salão de beleza; é um refúgio de bem-estar urbano. Com uma trajetória marcada pela excelência, oferecemos um atendimento personalizado que respeita a individualidade de cada de nossas clientes.
             </p>
             <div className="grid grid-cols-2 gap-8 mb-10">
               <div className="flex items-start gap-4">
-                <Clock className="w-6 h-6 text-gold shrink-0" />
+                <Clock className="w-6 h-6 text-gold shrink-0 animate-pulse" />
                 <div>
-                  <h4 className="font-bold mb-1">Horário Amplo</h4>
-                  <p className="text-xs text-white/40">Segunda a Sábado até as 19:00</p>
+                  <h4 className="font-bold mb-1 text-[#121212]">Horário Amplo</h4>
+                  <p className="text-xs text-[#121212]/60">Segunda a Sábado até as 19:00</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <Instagram className="w-6 h-6 text-gold shrink-0" />
+                <Instagram className="w-6 h-6 text-gold shrink-0 animate-pulse" />
                 <div>
-                  <h4 className="font-bold mb-1">Portfólio Vivo</h4>
-                  <p className="text-xs text-white/40">Acompanhe nossas transformações diárias</p>
+                  <h4 className="font-bold mb-1 text-[#121212]">Portfólio Vivo</h4>
+                  <p className="text-xs text-[#121212]/60">Acompanhe nossas transformações diárias</p>
                 </div>
               </div>
             </div>
             <a 
               href="https://www.instagram.com/essencia_studio_spa" 
               target="_blank"
-              className="inline-flex items-center gap-3 px-8 py-4 glass rounded-full hover:bg-white/10 transition-all"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-[#121212] text-white hover:bg-gold hover:text-[#121212] rounded-full transition-all duration-350 shadow-md shadow-[#121212]/10"
             >
               <Instagram className="w-5 h-5" /> Seguir no Instagram
             </a>
