@@ -33,7 +33,10 @@ export default function App() {
   const [selectedTime, setSelectedTime] = React.useState<string | null>(null);
   const [clientName, setClientName] = React.useState('');
   const [clientPhone, setClientPhone] = React.useState('');
-  const [calendarDate, setCalendarDate] = React.useState(new Date(2026, 4, 1)); // Iniciado em Maio de 2026
+  const [calendarDate, setCalendarDate] = React.useState(() => {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), 1); // Abre sempre no mês atual
+  });
 
   const categories = [
     'Todos', 'Cabelo', 'Depilação', 'Barba', 'Estética', 'Mãos e Pés', 'Maquiagem', 'Massagem', 'Sobrancelha'
@@ -41,10 +44,10 @@ export default function App() {
 
   const allServices = [
     { id: 1, category: 'Sobrancelha', name: 'Design de Sobrancelha', time: '30min', price: 'R$ 50,00' },
-    { id: 2, category: 'Cabelo', name: 'Corte Feminino Autorais', time: '60min', price: 'Sob Consulta' },
+    { id: 2, category: 'Cabelo', name: 'Corte Feminino Autoral', time: '60min', price: 'Sob Consulta' },
     { id: 3, category: 'Cabelo', name: 'Penteado para Eventos', time: '90min', price: 'A partir de R$ 150' },
     { id: 4, category: 'Estética', name: 'Hidratação Profunda Kérastase', time: '45min', price: 'R$ 180,00' },
-    { id: 5, category: 'Barba', name: 'Barba e Bigode Premium', time: '40min', price: 'R$ 60,00' },
+    { id: 5, category: 'Barba', name: 'Barba e Bigode', time: '40min', price: 'R$ 60,00' },
     { id: 6, category: 'Mãos e Pés', name: 'Manicure e Pedicure Spa', time: '90min', price: 'R$ 120,00' },
     { id: 7, category: 'Maquiagem', name: 'Maquiagem Social', time: '60min', price: 'R$ 200,00' },
     { id: 8, category: 'Massagem', name: 'Massagem Relaxante', time: '60min', price: 'R$ 150,00' },
@@ -53,7 +56,7 @@ export default function App() {
   ];
 
   const packages = [
-    { name: 'Dia de Noiva Premium', items: ['Cabelo', 'Maquiagem', 'Unhas', 'Massagem'], price: 'Sob Consulta' },
+    { name: 'Dia de Noiva', items: ['Cabelo', 'Maquiagem', 'Unhas', 'Massagem'], price: 'Sob Consulta' },
     { name: 'Combo Estética Capilar', items: ['Hidratação', 'Corte', 'Escova'], price: 'R$ 350,00' },
     { name: 'Spa Day Relax', items: ['Massagem', 'Limpeza de Pele', 'Manicure'], price: 'R$ 450,00' },
   ];
@@ -88,7 +91,13 @@ export default function App() {
     setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1, 1));
   };
 
+  const isCurrentMonth = (() => {
+    const today = new Date();
+    return calendarDate.getFullYear() === today.getFullYear() && calendarDate.getMonth() === today.getMonth();
+  })();
+
   const handlePrevMonth = () => {
+    if (isCurrentMonth) return; // Não volta para meses que já passaram
     setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() - 1, 1));
   };
 
@@ -191,8 +200,8 @@ export default function App() {
   const services = [
     { title: "Cabelos & Penteados", desc: "Cortes autorais e penteados para momentos inesquecíveis.", icon: <Scissors className="w-6 h-6 text-gold" /> },
     { title: "Estética Capilar", desc: "Tratamentos profundos para a saúde e brilho dos seus fios.", icon: <Sparkles className="w-6 h-6 text-gold" /> },
-    { title: "Maquiagem Profissional", desc: "Realçando sua beleza natural com técnicas de luxo.", icon: <Star className="w-6 h-6 text-gold" /> },
-    { title: "Estética Facial", desc: "Cuidados exclusivos para uma pele radiante e rejuvenescida.", icon: <Sparkles className="w-6 h-6 text-gold" /> }
+    { title: "Maquiagem Profissional", desc: "Realçando sua beleza natural com técnica e produtos profissionais.", icon: <Star className="w-6 h-6 text-gold" /> },
+    { title: "Estética Facial", desc: "Cuidados sob medida para uma pele radiante e rejuvenescida.", icon: <Sparkles className="w-6 h-6 text-gold" /> }
   ];
 
   const testimonials = [
@@ -258,7 +267,7 @@ export default function App() {
         <div className="absolute inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=1920" 
-            alt="Luxury Salon Interior" 
+            alt="Interior do salão Essencia Studio" 
             className="w-full h-full object-cover opacity-40 scale-105"
             referrerPolicy="no-referrer"
           />
@@ -272,7 +281,7 @@ export default function App() {
             </h1>
           </div>
           <p className="hero-sub text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10 font-light tracking-wide">
-            Especialistas em transformar olhares e elevar a autoestima através de técnicas exclusivas de visagismo e estética avançada.
+            Especialistas em transformar olhares e elevar a autoestima através de técnicas de visagismo e estética avançada.
           </p>
           <div className="hero-cta flex flex-col md:flex-row items-center justify-center gap-6">
             <button 
@@ -404,7 +413,7 @@ export default function App() {
 
           {/* Packages Section */}
           <div className="section-reveal text-center mb-16">
-            <h2 className="text-3xl md:text-5xl mb-6">Pacotes <span className="text-gold italic">Exclusivos</span></h2>
+            <h2 className="text-3xl md:text-5xl mb-6">Pacotes <span className="text-gold italic">Completos</span></h2>
             <p className="text-white/40 max-w-xl mx-auto">Combinações pensadas para uma experiência completa de cuidado e relaxamento.</p>
           </div>
 
@@ -444,7 +453,7 @@ export default function App() {
             <div className="aspect-[4/5] rounded-3xl overflow-hidden bg-white/40 p-2 border border-white/50 shadow-xl">
               <img 
                 src="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&q=80&w=800" 
-                alt="Salon Experience" 
+                alt="Bancada de atendimento do Essencia Studio" 
                 className="w-full h-full object-cover rounded-2xl"
                 referrerPolicy="no-referrer"
               />
@@ -455,7 +464,7 @@ export default function App() {
               <div className="mt-6 flex -space-x-3">
                 {[1,2,3,4].map(i => (
                   <div key={i} className="w-10 h-10 rounded-full border-2 border-white overflow-hidden">
-                    <img src={`https://picsum.photos/seed/${i+20}/100/100`} alt="User" referrerPolicy="no-referrer" />
+                    <img src={`https://picsum.photos/seed/${i+20}/100/100`} alt="Cliente do Essencia Studio" referrerPolicy="no-referrer" />
                   </div>
                 ))}
               </div>
@@ -466,7 +475,7 @@ export default function App() {
             <span className="text-gold uppercase tracking-[0.3em] text-sm mb-6 block font-bold">Nossa História</span>
             <h2 className="text-4xl md:text-6xl mb-8 leading-tight font-display text-[#121212]">Onde a Tradição encontra a <span className="text-gold italic">Modernidade</span></h2>
             <p className="text-[#121212]/80 text-lg mb-8 leading-relaxed">
-              O Essencia Studio é mais que um salão de beleza; é um refúgio de bem-estar urbano. Com uma trajetória marcada pela excelência, oferecemos um atendimento personalizado que respeita a individualidade de cada de nossas clientes.
+              O Essencia Studio é mais que um salão de beleza; é um refúgio de bem-estar urbano. Com uma trajetória marcada pela excelência, oferecemos um atendimento personalizado que respeita a individualidade de cada uma de nossas clientes.
             </p>
             <div className="grid grid-cols-2 gap-8 mb-10">
               <div className="flex items-start gap-4">
@@ -532,7 +541,7 @@ export default function App() {
         <div className="absolute inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=1920" 
-            alt="Beauty Detail" 
+            alt="Produtos de maquiagem profissional" 
             className="w-full h-full object-cover opacity-10"
             referrerPolicy="no-referrer"
           />
@@ -541,7 +550,7 @@ export default function App() {
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-4xl md:text-7xl mb-8">Pronta para sua <span className="text-gold italic">Transformação?</span></h2>
           <p className="text-xl text-white/50 mb-12 font-light">
-            Reserve seu horário e descubra por que somos referência em beleza e estética exclusiva.
+            Reserve seu horário em poucos passos e confirme pelo WhatsApp.
           </p>
           <div className="flex flex-col md:flex-row items-center justify-center gap-8">
             <button 
@@ -568,7 +577,7 @@ export default function App() {
               </span>
             </div>
             <p className="text-white/40 max-w-sm mb-8 leading-relaxed">
-              Excelência em Cabelos, Estética & Bem-estar. Um refúgio acolhedor e luxuoso criado para realçar a sua essência com serviços de excelência.
+              Cabelos, Estética & Bem-estar. Um espaço acolhedor criado para realçar a sua essência.
             </p>
             <div className="flex gap-6">
               <a href="https://www.instagram.com/essencia_studio_spa" target="_blank" className="w-10 h-10 glass rounded-full flex items-center justify-center hover:text-gold transition-colors">
@@ -714,7 +723,9 @@ export default function App() {
                   <button 
                     onClick={handlePrevMonth}
                     type="button"
-                    className="p-2 hover:text-gold transition-colors text-white cursor-pointer"
+                    disabled={isCurrentMonth}
+                    aria-label="Mês anterior"
+                    className="p-2 hover:text-gold transition-colors text-white cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:text-white"
                   >
                     &larr;
                   </button>
@@ -724,6 +735,7 @@ export default function App() {
                   <button 
                     onClick={handleNextMonth}
                     type="button"
+                    aria-label="Próximo mês"
                     className="p-2 hover:text-gold transition-colors text-white cursor-pointer"
                   >
                     &rarr;
@@ -885,7 +897,7 @@ export default function App() {
                 <div>
                   <span className="text-[10px] uppercase tracking-[0.25em] text-gold font-bold block mb-1">Passo 4 de 4</span>
                   <h3 className="text-2xl font-display text-white">Confirmação</h3>
-                  <p className="text-xs text-white/40 mt-1">Insira seus dados pessoais para validar seu momento de luxo e bem-estar.</p>
+                  <p className="text-xs text-white/40 mt-1">Informe seus dados para confirmar o agendamento pelo WhatsApp.</p>
                 </div>
 
                 <div className="space-y-4">

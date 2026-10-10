@@ -1,16 +1,82 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Essencia Studio | Salão de beleza e estética no Itaim Bibi, São Paulo</title>
+    <meta name="description" content="Salão de beleza no Itaim Bibi, São Paulo: cabelo, maquiagem, sobrancelha, manicure, massagem e estética facial. Veja serviços e valores e agende pelo WhatsApp. Segunda a sábado, das 8h às 19h." />
+    <link rel="canonical" href="https://essencia-studio.vercel.app/" />
+    <meta name="theme-color" content="#121212" />
+
+    <!-- Como o site aparece quando o link é compartilhado (WhatsApp, Instagram, Facebook) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="Essencia Studio" />
+    <meta property="og:title" content="Essencia Studio | Salão de beleza e estética no Itaim Bibi" />
+    <meta property="og:description" content="Cabelo, maquiagem, sobrancelha, manicure, massagem e estética facial. Veja serviços e valores e agende pelo WhatsApp." />
+    <meta property="og:url" content="https://essencia-studio.vercel.app/" />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=1200" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Dados do negócio para o Google e para assistentes de IA (ChatGPT, Gemini etc.) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BeautySalon",
+        "name": "Essencia Studio",
+        "description": "Salão de beleza e estética no Itaim Bibi, São Paulo: cabelo, maquiagem, sobrancelha, manicure e pedicure, massagem, depilação e estética facial.",
+        "url": "https://essencia-studio.vercel.app/",
+        "image": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=1200",
+        "telephone": "+55 11 98765-4321",
+        "priceRange": "R$ 50 - R$ 450",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Av. Pres. Juscelino Kubitschek, 1830 - Itaim Bibi",
+          "addressLocality": "São Paulo",
+          "addressRegion": "SP",
+          "postalCode": "04543-011",
+          "addressCountry": "BR"
+        },
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+            "opens": "08:00",
+            "closes": "19:00"
+          }
+        ],
+        "sameAs": ["https://www.instagram.com/essencia_studio_spa"],
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Serviços",
+          "itemListElement": [
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Design de Sobrancelha" }, "price": "50.00", "priceCurrency": "BRL" },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Corte Feminino Autoral" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Penteado para Eventos" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Hidratação Profunda Kérastase" }, "price": "180.00", "priceCurrency": "BRL" },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Barba e Bigode" }, "price": "60.00", "priceCurrency": "BRL" },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Manicure e Pedicure Spa" }, "price": "120.00", "priceCurrency": "BRL" },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Maquiagem Social" }, "price": "200.00", "priceCurrency": "BRL" },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Massagem Relaxante" }, "price": "150.00", "priceCurrency": "BRL" },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Depilação Completa" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Limpeza de Pele Profunda" }, "price": "220.00", "priceCurrency": "BRL" }
+          ]
+        }
+      }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
-    <title>Essencia Studio | Experiência Premium</title>
   </head>
   <body>
     <div id="root"></div>
+    <!-- Resumo para quem (ou qual robô) abre a página sem carregar o restante do site -->
+    <noscript>
+      <h1>Essencia Studio — salão de beleza e estética no Itaim Bibi, São Paulo</h1>
+      <p>Cabelo, maquiagem, sobrancelha, manicure e pedicure, massagem, depilação e estética facial.</p>
+      <p>Av. Pres. Juscelino Kubitschek, 1830 - Itaim Bibi, São Paulo - SP, 04543-011. Segunda a sábado, das 8h às 19h. Telefone e WhatsApp: (11) 98765-4321.</p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-
